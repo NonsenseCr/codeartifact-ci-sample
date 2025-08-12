@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build-scan-publish:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Windows, X64]
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       CODEARTIFACT_DOMAIN: secure-domain
