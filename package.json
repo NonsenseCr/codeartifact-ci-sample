@@ -1,6 +1,6 @@
 {
   "name": "hello-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Sample Node.js package to publish to AWS CodeArtifact via GitHub Actions",
   "main": "src/index.js",
   "scripts": {
