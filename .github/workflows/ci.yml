@@ -43,10 +43,11 @@ jobs:
       - name: Install deps
         run: npm install
 
-      - name: Run Snyk scan (no npm registry dependency)
-        uses: snyk/actions/node@master
-        with:
-          args: test --severity-threshold=high
+      - name: Install Snyk CLI (cross‑platform)
+        uses: snyk/actions/setup@master
+
+      - name: Run Snyk scan
+        run: snyk test --severity-threshold=high
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
