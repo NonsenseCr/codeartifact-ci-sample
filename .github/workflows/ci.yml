@@ -33,18 +33,18 @@ jobs:
           aws-region:            ${{ secrets.AWS_REGION }}
 
       - name: Resolve CodeArtifact npm endpoint & token
-        shell: bash
+        shell: pwsh
         run: |
-          set -e
-          export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token \
-            --domain secure-domain \
-            --domain-owner <AWS_ACCOUNT_ID> \
-            --query authorizationToken --output text`
-          export CODEARTIFACT_NPM_ENDPOINT=`aws codeartifact get-repository-endpoint \
-            --domain secure-domain \
-            --domain-owner <AWS_ACCOUNT_ID> \
-            --repository dev-repo \
-            --format npm --query repositoryEndpoint --output text`
+          $ErrorActionPreference = "Stop"
+          $env:CODEARTIFACT_AUTH_TOKEN = (aws codeartifact get-authorization-token `
+            --domain secure-domain `
+            --domain-owner <AWS_ACCOUNT_ID> `
+            --query authorizationToken --output text)
+          $env:CODEARTIFACT_NPM_ENDPOINT = (aws codeartifact get-repository-endpoint `
+            --domain secure-domain `
+            --domain-owner <AWS_ACCOUNT_ID> `
+            --repository dev-repo `
+            --format npm --query repositoryEndpoint --output text)
       - name: Configure npm to CodeArtifact
         run: |
           set -e
