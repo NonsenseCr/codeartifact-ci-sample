@@ -33,7 +33,7 @@ jobs:
           aws-region:            ${{ secrets.AWS_REGION }}
 
       - name: Resolve CodeArtifact npm endpoint & token
-        shell: pwsh
+        shell: powershell
         run: |
           $ErrorActionPreference = "Stop"
           $env:CODEARTIFACT_AUTH_TOKEN = (aws codeartifact get-authorization-token `
