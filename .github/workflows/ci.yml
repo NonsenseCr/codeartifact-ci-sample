@@ -28,8 +28,8 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = "Stop"
-          $env:CODEARTIFACT_AUTH_TOKEN = (aws codeartifact get-authorization-token --domain secure-domain --domain-owner <626635402082> --query authorizationToken --output text)
-          $env:CODEARTIFACT_NPM_ENDPOINT = (aws codeartifact get-repository-endpoint --domain secure-domain --domain-owner <626635402082> --repository dev-repo --format npm --query repositoryEndpoint --output text)
+          $env:CODEARTIFACT_AUTH_TOKEN = (aws codeartifact get-authorization-token --domain secure-domain --domain-owner 626635402082 --query authorizationToken --output text)
+          $env:CODEARTIFACT_NPM_ENDPOINT = (aws codeartifact get-repository-endpoint --domain secure-domain --domain-owner 626635402082 --repository dev-repo --format npm --query repositoryEndpoint --output text)
           echo "CODEARTIFACT_AUTH_TOKEN=$env:CODEARTIFACT_AUTH_TOKEN" >> $env:GITHUB_ENV
           echo "CODEARTIFACT_NPM_ENDPOINT=$env:CODEARTIFACT_NPM_ENDPOINT" >> $env:GITHUB_ENV
 
