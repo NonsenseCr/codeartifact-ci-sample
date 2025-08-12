@@ -38,11 +38,11 @@ jobs:
           $ErrorActionPreference = "Stop"
           $env:CODEARTIFACT_AUTH_TOKEN = (aws codeartifact get-authorization-token `
             --domain secure-domain `
-            --domain-owner <AWS_ACCOUNT_ID> `
+            --domain-owner <626635402082> `
             --query authorizationToken --output text)
           $env:CODEARTIFACT_NPM_ENDPOINT = (aws codeartifact get-repository-endpoint `
             --domain secure-domain `
-            --domain-owner <AWS_ACCOUNT_ID> `
+            --domain-owner <626635402082> `
             --repository dev-repo `
             --format npm --query repositoryEndpoint --output text)
       - name: Configure npm to CodeArtifact
