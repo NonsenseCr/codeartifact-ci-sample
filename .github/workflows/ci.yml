@@ -1,0 +1,69 @@
+name: CI-CD CodeArtifact (Node + Snyk)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-scan-publish:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      CODEARTIFACT_DOMAIN: secure-domain
+      CODEARTIFACT_REPO: dev-repo
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ secrets.AWS_REGION }}
+
+      - name: Resolve CodeArtifact npm endpoint & token
+        id: ca
+        run: |
+          set -e
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "ACCOUNT_ID=$ACCOUNT_ID" >> $GITHUB_OUTPUT
+          NPM_ENDPOINT=$(aws codeartifact get-repository-endpoint             --domain $CODEARTIFACT_DOMAIN             --domain-owner $ACCOUNT_ID             --repository $CODEARTIFACT_REPO             --format npm --query repositoryEndpoint --output text)
+          echo "NPM_ENDPOINT=$NPM_ENDPOINT" >> $GITHUB_OUTPUT
+          TOKEN=$(aws codeartifact get-authorization-token             --domain $CODEARTIFACT_DOMAIN             --domain-owner $ACCOUNT_ID             --query authorizationToken --output text)
+          echo "TOKEN=$TOKEN" >> $GITHUB_OUTPUT
+
+      - name: Configure npm to CodeArtifact
+        run: |
+          set -e
+          NPM_ENDPOINT="${{ steps.ca.outputs.NPM_ENDPOINT }}"
+          HOST=$(echo "$NPM_ENDPOINT" | sed 's#^https://##')
+          npm config set registry "$NPM_ENDPOINT"
+          npm config set always-auth true
+          npm config set //$HOST:_authToken "${{ steps.ca.outputs.TOKEN }}"
+
+      - name: Install deps
+        run: npm ci || npm i
+
+      - name: Snyk scan (fail if high+)
+        uses: snyk/actions/node@master
+        with:
+          args: test --severity-threshold=high
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Publish to CodeArtifact
+        run: npm publish

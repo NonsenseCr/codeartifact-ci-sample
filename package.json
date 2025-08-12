@@ -1,0 +1,13 @@
+{
+  "name": "hello-app",
+  "version": "1.0.0",
+  "description": "Sample Node.js package to publish to AWS CodeArtifact via GitHub Actions",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "node -e \"console.log('build ok')\"",
+    "start": "node src/index.js",
+    "test": "node -e \"console.log('no tests')\""
+  },
+  "author": "",
+  "license": "MIT"
+}
